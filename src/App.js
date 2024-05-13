@@ -1,25 +1,49 @@
-import logo from './logo.svg';
-import './App.css';
+import {
+    QueryClient,
+    QueryClientProvider,
+    useQuery, useQueryClient,
+} from 'react-query';
+import {useState} from "react";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+const queryClient = new QueryClient();
+
+export const App = () => (
+    <QueryClientProvider client={queryClient}>
+        <Example />
+    </QueryClientProvider>
+);
+
+function Example() {
+    const { isLoading, error, data: dataUsers } = useQuery(
+        'users',
+        () =>
+            fetch(
+                'http://localhost:8080/api/v1/main/all-users'
+            ).then((response) => response.json())
+    );
+
+
+    const [getUsers, setGetUsers] = useState([]);
+    const query = useQuery('users', getUsers);
+    const queryClient = useQueryClient();
+
+    if (isLoading) return <p>Загрузка...</p>;
+
+    if (error) return <p>Ошибка: {error.message}</p>;
+    console.log(dataUsers)
+    return (
+        <div>
+            <ul>
+                {query.data.map((data) => (
+                    <li key={data.id}>
+                        <p>Имя: {data.firstName} | Фамилия: {data.lastName} | Отчество: {data.patronymicName} </p>
+
+                        <p> Логин: {data.login} | Возраст: {data.age} | Пароль:{data.password}</p>
+                    </li>
+                ))}
+            </ul>
+
+
+        </div>
+    );
 }
-
-export default App;
