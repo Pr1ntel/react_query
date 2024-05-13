@@ -12,13 +12,13 @@ export const App = () => (
         <Example />
     </QueryClientProvider>
 );
-
+const httpNameDefault = 'http://localhost:8080/api/v1/main';
 function Example() {
     const { isLoading, error, data: dataUsers } = useQuery(
         'users',
         () =>
             fetch(
-                'http://localhost:8080/api/v1/main/all-users'
+                httpNameDefault + '/all-users'
             ).then((response) => response.json())
     );
 
